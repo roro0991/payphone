@@ -10,29 +10,27 @@ public class DialogueManager : MonoBehaviour
     public TextMeshProUGUI nameText;
     public TextMeshProUGUI dialogueText;
     float textSpeed = 0.05f;
+    
+    public Queue<string> lines;
+
     bool playerIsInDialogue = false;
     bool coroutineIsRunning = false;
-    public Queue<string> lines;
-    public Animator dialogueBoxAnimator;
+    
     PayPhone payPhone;
     SFXManager sfxManager;
 
+    public Animator dialogueBoxAnimator;
     void Start()
     {
-        sfxManager = FindAnyObjectByType<SFXManager>();
-        payPhone = FindObjectOfType<PayPhone>();
-        lines = new Queue<string>();
         nameText.text = string.Empty;
         dialogueText.text = string.Empty;
+        
+        lines = new Queue<string>();
+
+        sfxManager = FindAnyObjectByType<SFXManager>();        
+        payPhone = FindObjectOfType<PayPhone>();
     }
 
-    private void Update()
-    {
-        if (payPhone.GetReceiverStatus() == false)
-        {
-            EndDialogue();
-        }
-    }
 
     public void StartDialogue(Dialogue dialogue)
     {
@@ -54,13 +52,14 @@ public class DialogueManager : MonoBehaviour
 
     public void DisplayNextSentence()
     {
-            if (lines.Count == 0)
-            {
-                EndDialogue();
-                return;
-            }
-            string line = lines.Dequeue();
-            StartCoroutine(TypeLine(line));
+         if (lines.Count == 0)
+         {
+             EndDialogue();
+             return;
+         }
+         string line = lines.Dequeue();
+         StopAllCoroutines();
+         StartCoroutine(TypeLine(line));
     }
 
     public void EndDialogue()

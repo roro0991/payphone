@@ -9,50 +9,46 @@ using UnityEngine.UI;
 public class PayPhone : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI Display;
-    bool receiverIsPickedUp = false;
+
+    int[] phoneNumber = new int[7];
+
+    int currentPhoneNumberIndex;
+
     public Animator receiverAnimator;
+
     SFXManager sfxManager;
-    DialogueManager dialogueManager;
+
+    bool receiverIsPickedUp;
 
     private void Start()
     {
         sfxManager = FindObjectOfType<SFXManager>();
-        dialogueManager = FindObjectOfType<DialogueManager>();
+
+        currentPhoneNumberIndex = 0;
+
+        receiverIsPickedUp = false;
     }
 
     private void Update()
     {
-        if (dialogueManager.GetInDialogueStatus() == true && Input.GetButtonDown("Fire1"))
-        {
-            dialogueManager.DisplayNextSentence();
-        }
+        string numberToDisplay = String.Join(String.Empty, phoneNumber);
+        Display.text = numberToDisplay;
     }
 
-    public void Execute()
+    public void Number(int value)
     {
-        if (Display.text == "4166276911")
-        {
-            FindObjectOfType<DialogueTrigger>().TriggerDialogue();
-            sfxManager.DialRing();            
-        }
-    }
-
-    public void Number(int number)
-    {
-        if (receiverIsPickedUp)
+        if (!receiverIsPickedUp)
         {
             sfxManager.ButtonPress();
-            Display.text += number.ToString(); ;
+            return;
         }
-    }
 
-    public void Symbol(string symbol)
-    {
-        if (receiverIsPickedUp)
+        sfxManager.ButtonPress();
+        if (currentPhoneNumberIndex < phoneNumber.Length)
         {
-            sfxManager.ButtonPress(); 
-            Display.text += symbol.ToString();
-        }        
+            phoneNumber[currentPhoneNumberIndex] = value;
+            currentPhoneNumberIndex++; 
+        }
     }
 
     public void PickUpReceiver()
@@ -64,12 +60,18 @@ public class PayPhone : MonoBehaviour
             receiverIsPickedUp = true;
         }
         else if (receiverIsPickedUp)
-        {
+        {            
             sfxManager.ReceiverDown();
-            receiverAnimator.SetBool("OffTheHook", false);            
+            receiverAnimator.SetBool("OffTheHook", false);
             receiverIsPickedUp = false;
-            Display.text = string.Empty; 
-        }
+            Array.Clear(phoneNumber, 0, phoneNumber.Length);
+            currentPhoneNumberIndex = 0;
+        }               
+    }
+
+    public string GetPhoneNumber()
+    {
+        return Display.text; 
     }
 
     public bool GetReceiverStatus()
