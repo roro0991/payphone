@@ -5,6 +5,8 @@ using System.ComponentModel.Design.Serialization;
 using UnityEngine;
 using TMPro;
 using Ink.Runtime;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class JSONDialogueManager : MonoBehaviour
 {
@@ -13,6 +15,12 @@ public class JSONDialogueManager : MonoBehaviour
 
     [SerializeField] private TextMeshProUGUI nameText;
     [SerializeField] private TextMeshProUGUI dialogueText;
+
+    [Header("Choices UI")]
+    [SerializeField] private GameObject[] choices;
+    private TextMeshProUGUI[] choicesText;
+
+    [SerializeField] private Button continueButton; 
 
     private Story currentStory; 
 
@@ -37,6 +45,14 @@ public class JSONDialogueManager : MonoBehaviour
     {
         sfxManager = FindObjectOfType<SFXManager>();
         payPhone = FindObjectOfType<PayPhone>();
+
+        choicesText = new TextMeshProUGUI[choices.Length];
+        int index = 0; 
+        foreach (GameObject choice in choices)
+        {
+            choicesText[index] = choice.GetComponentInChildren<TextMeshProUGUI>();
+            index++; 
+        }
     }
 
     private void Update()
@@ -44,7 +60,7 @@ public class JSONDialogueManager : MonoBehaviour
         if (payPhone.GetReceiverStatus() == false)
         {
             ExitDialogueMode();
-        }
+        }       
     }
 
     public static JSONDialogueManager GetInstance()
@@ -71,7 +87,7 @@ public class JSONDialogueManager : MonoBehaviour
         {
             string line = currentStory.Continue();
             StopAllCoroutines();
-            StartCoroutine(TypeLine(line));
+            StartCoroutine(TypeLine(line));            
         }
         else
         {
@@ -81,6 +97,8 @@ public class JSONDialogueManager : MonoBehaviour
 
     IEnumerator TypeLine(string line)
     {
+        DisableChoices();
+        DisableContinueButton();
         sfxManager.Dialogue();
         dialogueText.text = "";
         foreach (char letter in line.ToCharArray())
@@ -90,5 +108,67 @@ public class JSONDialogueManager : MonoBehaviour
         }
         sfxManager.audioSource.Stop();
         sfxManager.audioSource.loop = false;
+        EnableChoices();
+        DisplayChoices();
     }
+
+    private void DisplayChoices()
+    {
+        List<Choice> currentChoices = currentStory.currentChoices; 
+
+        if (currentChoices.Count == 0)
+        {
+            EnableContinueButton();
+        }
+
+        if (currentChoices.Count > choices.Length)
+        {
+            Debug.LogError("There are too many choices to fit the UI");
+        }
+
+        int index = 0;
+        foreach (Choice choice in currentChoices)
+        {
+            choices[index].gameObject.SetActive(true);
+            choicesText[index].text = choice.text;
+            index++;
+        }
+
+        for (int i = index; i < choices.Length; i++)
+        {
+            choices[i].gameObject.SetActive(false); 
+        }
+    }
+
+    public void MakeChoice(int choiceIndex)
+    {
+        currentStory.ChooseChoiceIndex(choiceIndex);
+        ContinueStory();
+    }
+
+    private void DisableChoices()
+    {
+        foreach (GameObject choice in choices)
+        {
+            choice.SetActive(false);
+        }
+    }
+
+    private void EnableChoices()
+    {
+        foreach (GameObject choice in choices)
+        {
+            choice.SetActive(true);
+        }
+    }
+    private void DisableContinueButton()
+    {
+        continueButton.gameObject.SetActive(false);
+    }
+
+    private void EnableContinueButton()
+    {
+        continueButton.gameObject.SetActive(true);
+    }
+
 }

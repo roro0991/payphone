@@ -20,7 +20,7 @@ public class DialogueTrigger : MonoBehaviour
     {
         if (!callInProgress)
         {
-            if (payPhone.GetPhoneNumber() == "5550001")
+            if (payPhone.GetPhoneNumber() == "555-0001")
             {
                 callInProgress = true;
                 StartCoroutine(Call());

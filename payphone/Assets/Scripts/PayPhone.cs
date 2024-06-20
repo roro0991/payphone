@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -10,7 +11,7 @@ public class PayPhone : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI Display;
 
-    int[] phoneNumber = new int[7];
+    int?[] phoneNumber = new int?[7];
 
     int currentPhoneNumberIndex;
 
@@ -21,7 +22,7 @@ public class PayPhone : MonoBehaviour
     bool receiverIsPickedUp;
 
     private void Start()
-    {
+    {        
         sfxManager = FindObjectOfType<SFXManager>();
 
         currentPhoneNumberIndex = 0;
@@ -31,8 +32,18 @@ public class PayPhone : MonoBehaviour
 
     private void Update()
     {
-        string numberToDisplay = String.Join(String.Empty, phoneNumber);
-        Display.text = numberToDisplay;
+        string numberAsString = String.Join(string.Empty, phoneNumber); 
+        string numberToDisplay = "";
+        foreach (char number in numberAsString.ToCharArray())
+        {
+            numberToDisplay += number;
+            if (numberToDisplay.Length == 3)
+            {
+                numberToDisplay += "-";
+            }
+        }
+        Display.text = numberToDisplay; 
+
     }
 
     public void Number(int value)

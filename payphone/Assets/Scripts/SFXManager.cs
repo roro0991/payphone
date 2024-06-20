@@ -20,7 +20,7 @@ public class SFXManager : MonoBehaviour
 
     public void DialRing()
     {
-        audioSource.volume = .2f; 
+        audioSource.volume = .1f; 
         audioSource.clip = dialRinging;
         audioSource.loop = true; 
         audioSource.Play();
@@ -28,14 +28,14 @@ public class SFXManager : MonoBehaviour
     }
     public void ReceiverUP()
     {
-        audioSource.volume = 1.25f;
+        audioSource.volume = 1f;
         audioSource.clip = receiverUp;
         audioSource.Play();
     }
 
     public void ReceiverDown()
     {
-        audioSource.volume = 1.25f;
+        audioSource.volume = 1f;
         audioSource.clip = receiverDown;
         audioSource.loop = false;
         audioSource.Play();
