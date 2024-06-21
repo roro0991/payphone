@@ -20,7 +20,9 @@ public class JSONDialogueManager : MonoBehaviour
     [SerializeField] private GameObject[] choices;
     private TextMeshProUGUI[] choicesText;
 
-    [SerializeField] private Button continueButton; 
+    [SerializeField] private Button continueButton;
+
+    public Animator dialoguePanelAnimator; 
 
     private Story currentStory; 
 
@@ -31,7 +33,6 @@ public class JSONDialogueManager : MonoBehaviour
 
     private float textSpeed = 0.05f;
 
-    public Animator dialoguePanelAnimator; 
     private void Awake()
     {
         if (instance != null)
@@ -56,7 +57,7 @@ public class JSONDialogueManager : MonoBehaviour
     }
 
     private void Update()
-    {
+    {        
         if (payPhone.GetReceiverStatus() == false)
         {
             ExitDialogueMode();
@@ -70,28 +71,39 @@ public class JSONDialogueManager : MonoBehaviour
 
     public void EnterDialogueMode(TextAsset inkJSON)
     {
+        sfxManager.BombLight();
+        foreach (GameObject bombLight in payPhone.bombLights)
+        {
+            bombLight.GetComponent<Image>().color = Color.green;
+        }
         currentStory = new Story(inkJSON.text);
         dialoguePanelAnimator.SetBool("inDialogue", true);
-        ContinueStory();
+        Invoke("ContinueStory", 0.1f);
     }
 
     public void ExitDialogueMode()
     {
         dialoguePanelAnimator.SetBool("inDialogue", false);
         dialogueText.text = string.Empty;
+                
     }
 
     public void ContinueStory()
     {
-        if (currentStory.canContinue)
+        if (currentStory == null)
         {
+            ExitDialogueMode();
+            return; 
+        }
+        if (currentStory.canContinue)
+        {            
             string line = currentStory.Continue();
             StopAllCoroutines();
             StartCoroutine(TypeLine(line));            
         }
         else
         {
-            ExitDialogueMode();
+            ExitDialogueMode();            
         }
     }
 
@@ -171,4 +183,28 @@ public class JSONDialogueManager : MonoBehaviour
         continueButton.gameObject.SetActive(true);
     }
 
+    public void NotInService()
+    {
+        dialoguePanelAnimator.SetBool("inDialogue", true);
+        string line = "The number you have dialed is not in service.";
+        StopAllCoroutines();
+        DisableChoices();
+        StartCoroutine(TypeLineNotInService(line));
+    }   
+
+    IEnumerator TypeLineNotInService(string line)
+    {
+        DisableChoices();
+        DisableContinueButton();
+        sfxManager.Dialogue();
+        dialogueText.text = "";
+        foreach (char letter in line.ToCharArray())
+        {
+            dialogueText.text += letter;
+            yield return new WaitForSeconds(textSpeed); 
+        }
+        sfxManager.audioSource.Stop();
+        sfxManager.audioSource.loop = false;
+        EnableContinueButton();
+    }
 }

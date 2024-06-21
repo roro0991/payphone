@@ -5,7 +5,7 @@ using UnityEngine;
 public class SFXManager : MonoBehaviour
 {
     public AudioSource audioSource;
-    public AudioClip receiverUp, receiverDown, dialogue, dialRinging;
+    public AudioClip receiverUp, receiverDown, dialogue, dialRinging, bombLight;
     public List<AudioClip> buttonPresses = new List<AudioClip>(); 
 
     public void ButtonPress()
@@ -30,6 +30,7 @@ public class SFXManager : MonoBehaviour
     {
         audioSource.volume = 1f;
         audioSource.clip = receiverUp;
+        audioSource.loop = false;
         audioSource.Play();
     }
 
@@ -47,5 +48,13 @@ public class SFXManager : MonoBehaviour
         audioSource.clip = dialogue;
         audioSource.loop = true;
         audioSource.Play(); 
+    }
+
+    public void BombLight()
+    {
+        audioSource.volume = 0.75f;
+        audioSource.clip = bombLight;
+        audioSource.loop = false;
+        audioSource.Play();
     }
 }

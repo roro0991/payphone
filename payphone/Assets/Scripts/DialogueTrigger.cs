@@ -9,7 +9,9 @@ public class DialogueTrigger : MonoBehaviour
     [SerializeField] private TextAsset inkJSON;
     PayPhone payPhone;
     SFXManager sfxManager;
+    float ringTime;
     bool callInProgress = false;
+    bool bombCounterTriggered = false;
 
     private void Start()
     {
@@ -20,10 +22,19 @@ public class DialogueTrigger : MonoBehaviour
     {
         if (!callInProgress)
         {
-            if (payPhone.GetPhoneNumber() == "555-0001")
+            if (payPhone.GetPhoneNumber().Length == 8)
             {
-                callInProgress = true;
-                StartCoroutine(Call());
+                if (payPhone.GetPhoneNumber() == "726-2693")
+                {                    
+                    callInProgress = true;
+                    StartCoroutine(Call());
+                }
+                else
+                {
+                    callInProgress = true; 
+                    StartCoroutine(NumberNotInService());
+                    bombCounterTriggered = true;
+                }
             }
         }
 
@@ -33,16 +44,35 @@ public class DialogueTrigger : MonoBehaviour
             callInProgress = false;
         }
 
-        IEnumerator Call()
-        {
-            yield return new WaitForSeconds(1.5f); 
-            sfxManager.DialRing();
-            yield return new WaitForSeconds(5.5f);
-            sfxManager.audioSource.Stop();
-            JSONDialogueManager.GetInstance().EnterDialogueMode(inkJSON);
-        }
+    }
+    IEnumerator Call()
+    {
+        ringTime = Random.Range(5.5f, 10.5f);
+        yield return new WaitForSeconds(1.5f); 
+        sfxManager.DialRing();
+        yield return new WaitForSeconds(ringTime);
+        sfxManager.audioSource.Stop();
+        JSONDialogueManager.GetInstance().EnterDialogueMode(inkJSON);
     }
 
+    IEnumerator NumberNotInService()
+    {
+        yield return new WaitForSeconds(1.5f);
+        sfxManager.DialRing();
+        yield return new WaitForSeconds(3.5f);
+        sfxManager.audioSource.Stop();
+        JSONDialogueManager.GetInstance().NotInService();
+    }
+
+    public bool GetBombCounterTriggerStatus()
+    {
+        return bombCounterTriggered;
+    }
+
+    public void SetBombCounterTriggerStatus(bool triggerStatus)
+    {
+        bombCounterTriggered = triggerStatus; 
+    }
 
 }
 
