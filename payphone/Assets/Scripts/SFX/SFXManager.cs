@@ -5,16 +5,14 @@ using UnityEngine;
 public class SFXManager : MonoBehaviour
 {
     public AudioSource audioSource;
-    public AudioClip receiverUp, receiverDown, dialogue, dialRinging, bombLight;
+    public AudioClip receiverUp, receiverDown, dialogue, dialRinging, bombLight, documentSlide;
     public List<AudioClip> buttonPresses = new List<AudioClip>(); 
 
     public void ButtonPress()
     {
-        audioSource.volume = 1f;
         int index = Random.Range(0, buttonPresses.Count);
         AudioClip buttonPressClip = buttonPresses[index];
-        audioSource.clip = buttonPressClip;
-        audioSource.Play();
+        audioSource.PlayOneShot(buttonPressClip);
 
     }
 
@@ -29,17 +27,15 @@ public class SFXManager : MonoBehaviour
     public void ReceiverUP()
     {
         audioSource.volume = 1f;
-        audioSource.clip = receiverUp;
         audioSource.loop = false;
-        audioSource.Play();
+        audioSource.PlayOneShot(receiverUp);
     }
 
     public void ReceiverDown()
     {
         audioSource.volume = 1f;
-        audioSource.clip = receiverDown;
         audioSource.loop = false;
-        audioSource.Play();
+        audioSource.PlayOneShot(receiverDown);
     }
 
     public void Dialogue()
@@ -53,8 +49,14 @@ public class SFXManager : MonoBehaviour
     public void BombLight()
     {
         audioSource.volume = 0.75f;
-        audioSource.clip = bombLight;
         audioSource.loop = false;
-        audioSource.Play();
+        audioSource.PlayOneShot(bombLight);
+    }
+
+    public void DocumentSlide()
+    {
+        audioSource.volume = 1f;
+        audioSource.loop = false;
+        audioSource.PlayOneShot(documentSlide);
     }
 }

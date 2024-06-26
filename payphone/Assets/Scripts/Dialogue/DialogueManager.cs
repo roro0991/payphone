@@ -7,8 +7,9 @@ using TMPro;
 using Ink.Runtime;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using UnityEngine.SearchService;
 
-public class JSONDialogueManager : MonoBehaviour
+public class DialogueManager : MonoBehaviour
 {
 
     [Header("Dialogue UI")]
@@ -26,26 +27,14 @@ public class JSONDialogueManager : MonoBehaviour
 
     private Story currentStory; 
 
-    private static JSONDialogueManager instance;
-
-    SFXManager sfxManager;
-    PayPhone payPhone;
+    [SerializeField] SFXManager sfxManager;
+    [SerializeField] PayPhone payPhone;
 
     private float textSpeed = 0.05f;
 
-    private void Awake()
-    {
-        if (instance != null)
-        {
-            Debug.LogWarning("Found more than one Dialogue Manager in the scene");
-        }
-        instance = this;
-    }
 
     private void Start()
     {
-        sfxManager = FindObjectOfType<SFXManager>();
-        payPhone = FindObjectOfType<PayPhone>();
 
         choicesText = new TextMeshProUGUI[choices.Length];
         int index = 0; 
@@ -62,11 +51,6 @@ public class JSONDialogueManager : MonoBehaviour
         {
             ExitDialogueMode();
         }       
-    }
-
-    public static JSONDialogueManager GetInstance()
-    {
-        return instance; 
     }
 
     public void EnterDialogueMode(TextAsset inkJSON)
@@ -96,16 +80,39 @@ public class JSONDialogueManager : MonoBehaviour
             return; 
         }
         if (currentStory.canContinue)
-        {            
+        {
             string line = currentStory.Continue();
+            /*HandleTags(currentStory.currentTags);*/
             StopAllCoroutines();
             StartCoroutine(TypeLine(line));            
         }
         else
         {
-            ExitDialogueMode();            
+            ExitDialogueMode();
         }
     }
+
+
+    /*private void HandleTags(List<string> currentTags)
+    {
+        foreach (string tag in currentTags)
+        {
+            string[] splitTag = tag.Split(':');
+            if (splitTag.Length != 2)
+            {
+                Debug.LogError("Tag could not be appropriately parsed: " + tag);
+            }
+            string tagKey = splitTag[0].Trim();
+            string tagValue = splitTag[1].Trim();
+
+            switch (tagKey)
+            {
+                default:
+                    Debug.LogWarning("Tag came in but is not currently being handled: " + tag);
+                    break;
+            }
+        }
+    }*/
 
     IEnumerator TypeLine(string line)
     {
@@ -113,10 +120,23 @@ public class JSONDialogueManager : MonoBehaviour
         DisableContinueButton();
         sfxManager.Dialogue();
         dialogueText.text = "";
+        bool isAddingRichTextTag = false;
         foreach (char letter in line.ToCharArray())
         {
+            if (letter == '<' || isAddingRichTextTag)
+            {
+                isAddingRichTextTag = true;
+                dialogueText.text += letter;
+                if (letter == '>')
+                {
+                    isAddingRichTextTag = false;
+                }
+            }
+            else
+            {
             dialogueText.text += letter;
             yield return new WaitForSeconds(textSpeed);
+            }
         }
         sfxManager.audioSource.Stop();
         sfxManager.audioSource.loop = false;
@@ -190,6 +210,7 @@ public class JSONDialogueManager : MonoBehaviour
         StopAllCoroutines();
         DisableChoices();
         StartCoroutine(TypeLineNotInService(line));
+
     }   
 
     IEnumerator TypeLineNotInService(string line)
