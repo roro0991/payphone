@@ -3,16 +3,26 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class CoinGenerator : MonoBehaviour
+public class CoinGenerator : MonoBehaviour, IBeginDragHandler, IDragHandler
 {
     [SerializeField] GameObject coin;
+    [SerializeField] SFXManager sfxManager;
+    Canvas canvas;
 
-    public void GenerateCoin()
+    private void Start()
     {
-        Vector2 worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition); 
-            Instantiate
-            (coin, worldPosition,
-            Quaternion.identity,
-            GameObject.FindGameObjectWithTag("Canvas").transform);
+        canvas = FindAnyObjectByType<Canvas>();
+    }
+
+    public void OnBeginDrag(PointerEventData eventData)
+    {
+        sfxManager.CoinPickUp();
+        GameObject newCoin = Instantiate(coin, eventData.position, Quaternion.identity);
+        newCoin.transform.SetParent(canvas.transform, false);
+        eventData.pointerDrag = newCoin;        
+    }
+
+    public void OnDrag(PointerEventData eventData)
+    {
     }
 }

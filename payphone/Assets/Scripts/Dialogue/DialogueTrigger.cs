@@ -19,7 +19,6 @@ public class DialogueTrigger : MonoBehaviour
 
     bool isDailing = false;
     bool callInProgress = false;
-    bool bombCounterTriggered = false;
   
     private void Update()
     {
@@ -84,18 +83,7 @@ public class DialogueTrigger : MonoBehaviour
         yield return new WaitForSeconds(3.5f);
         isDailing = false;
         sfxManager.audioSource.Stop();
-        bombCounterTriggered = true;
         dialogueManager.NotInService();
-    }
-
-    public bool GetBombCounterTriggerStatus()
-    {
-        return bombCounterTriggered;
-    }
-
-    public void SetBombCounterTriggerStatus(bool triggerStatus)
-    {
-        bombCounterTriggered = triggerStatus; 
     }
 
     public bool GetIsDailingStatus()
@@ -103,5 +91,9 @@ public class DialogueTrigger : MonoBehaviour
         return isDailing; 
     }
 
+    public bool GetInCallStatus()
+    {
+        return callInProgress; 
+    }
 }
 

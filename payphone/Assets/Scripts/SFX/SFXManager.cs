@@ -5,9 +5,22 @@ using UnityEngine;
 public class SFXManager : MonoBehaviour
 {
     public AudioSource audioSource;
-    public AudioClip receiverUp, receiverDown, dialogue, dialRinging, bombLight, documentSlide;
-    public List<AudioClip> buttonPresses = new List<AudioClip>(); 
+    public AudioClip receiverUp, receiverDown, dialogue, dialRinging, documentSlide, coinPickUp;
+    public List<AudioClip> buttonPresses = new List<AudioClip>();
+    public List<AudioClip> coinInserts = new List<AudioClip>();
 
+    public void CoinPickUp()
+    {
+        audioSource.volume = 1f;        
+        audioSource.loop = false;
+        audioSource.PlayOneShot(coinPickUp);
+    }
+    public void coinInsert()
+    {
+        int index = Random.Range(0, coinInserts.Count);
+        AudioClip coinInsertClip = coinInserts[index];
+        audioSource.PlayOneShot(coinInsertClip); 
+    }
     public void ButtonPress()
     {
         int index = Random.Range(0, buttonPresses.Count);
@@ -43,13 +56,6 @@ public class SFXManager : MonoBehaviour
         audioSource.clip = dialogue;
         audioSource.loop = true;
         audioSource.Play(); 
-    }
-
-    public void BombLight()
-    {
-        audioSource.volume = 0.75f;
-        audioSource.loop = false;
-        audioSource.PlayOneShot(bombLight);
     }
 
     public void DocumentSlide()

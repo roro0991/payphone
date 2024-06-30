@@ -7,18 +7,17 @@ public class CoinSlot : MonoBehaviour, IDropHandler
 {
     int coins = 0;
 
-    PayPhone payphone;
-    private void Start()
-    {
-        payphone = FindObjectOfType<PayPhone>(); 
-    }
+    [SerializeField] PayPhone payphone;
+    [SerializeField] SFXManager sfxManager;
+    
     private void Update()
     {
         Debug.Log("there are " + coins + " coins in the coinslot!");
     }
     public void OnDrop(PointerEventData eventData)
     {
-        GameObject dropped = eventData.pointerDrag;  
+        GameObject dropped = eventData.pointerDrag;
+        sfxManager.coinInsert(); 
         Destroy(dropped.gameObject); 
         if (payphone.GetReceiverStatus() == true)
         {

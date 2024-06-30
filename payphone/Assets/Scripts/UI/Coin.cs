@@ -5,21 +5,15 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-public class Coin : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+public class Coin : MonoBehaviour, IDragHandler, IEndDragHandler
 {
     Canvas canvas;
     public Image image;
-    [HideInInspector] public Transform parentAfterDrag; 
-    private void Start()
+    [HideInInspector] public Transform parentAfterDrag;
+
+    private void Awake()
     {
-        canvas = FindObjectOfType<Canvas>(); 
-    }
-    public void OnBeginDrag(PointerEventData eventData)
-    {
-        parentAfterDrag = transform.parent;
-        transform.SetParent(transform.root);
-        transform.SetAsLastSibling();
-        image.raycastTarget = false;
+        canvas = FindObjectOfType<Canvas>();
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -35,6 +29,8 @@ public class Coin : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
             out position);
 
         transform.position = canvas.transform.TransformPoint(position);
+
+        image.raycastTarget = false;
 
     }
 

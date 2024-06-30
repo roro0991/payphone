@@ -8,6 +8,7 @@ using Ink.Runtime;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEngine.SearchService;
+using Ink.UnityIntegration; 
 
 public class DialogueManager : MonoBehaviour
 {
@@ -25,12 +26,18 @@ public class DialogueManager : MonoBehaviour
     [SerializeField] SFXManager sfxManager;
     [SerializeField] PayPhone payPhone;
 
-    public Animator dialoguePanelAnimator; 
+    public Animator dialoguePanelAnimator;
 
-    private Story currentStory; 
+    [SerializeField] private InkFile globalsInkFile; 
+    private Story currentStory;
+    private DialogueVariables dialogueVariables; 
 
     private float textSpeed = 0.05f;
 
+    private void Awake()
+    {
+        dialogueVariables = new DialogueVariables(globalsInkFile.filePath);
+    }
     private void Start()
     {
 
@@ -53,21 +60,20 @@ public class DialogueManager : MonoBehaviour
 
     public void EnterDialogueMode(TextAsset inkJSON)
     {
-        sfxManager.BombLight();
-        foreach (GameObject bombLight in payPhone.bombLights)
-        {
-            bombLight.GetComponent<Image>().color = Color.green;
-        }
         currentStory = new Story(inkJSON.text);
+        dialogueVariables.StartListening(currentStory);
         dialoguePanelAnimator.SetBool("inDialogue", true);
         Invoke("ContinueStory", 0.1f);
     }
 
     public void ExitDialogueMode()
     {
+        if (currentStory != null)
+        {
+            dialogueVariables.StopListening(currentStory);
+        }
         dialoguePanelAnimator.SetBool("inDialogue", false);
-        dialogueText.text = string.Empty;
-                
+        dialogueText.text = string.Empty;                
     }
 
     public void ContinueStory()

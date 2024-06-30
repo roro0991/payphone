@@ -10,12 +10,10 @@ using UnityEngine.UI;
 public class PayPhone : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI Display;
-    [SerializeField] public GameObject[] bombLights = new GameObject[3];
 
     int?[] phoneNumber = new int?[7];
 
     int currentPhoneNumberIndex = 0;
-    int triggeredBombLightIndex = 0;
     int currentDigitIndex = 0;
     int numberAsInt;
 
@@ -41,8 +39,9 @@ public class PayPhone : MonoBehaviour
     public void NumberButton(int value)
     {
         if (!receiverIsPickedUp
-            | coinSlot.GetCoinCount() == 0
-            || dialogueTrigger.GetIsDailingStatus() == true)
+            || coinSlot.GetCoinCount() == 0
+            || dialogueTrigger.GetIsDailingStatus() == true
+            || dialogueTrigger.GetInCallStatus() == true)
         {
             sfxManager.ButtonPress();
             return;
@@ -70,20 +69,8 @@ public class PayPhone : MonoBehaviour
         }
         else if (receiverIsPickedUp)
         {
-            if (dialogueTrigger.GetBombCounterTriggerStatus() == false)
-            {
-                sfxManager.audioSource.Stop();
-                sfxManager.ReceiverDown();
-            }
-            else if (dialogueTrigger.GetBombCounterTriggerStatus() == true)
-            {
-                sfxManager.audioSource.Stop();
-                sfxManager.BombLight();
-                dialogueTrigger.SetBombCounterTriggerStatus(false);
-                bombLights[triggeredBombLightIndex].GetComponent<Image>().color = Color.red;
-                triggeredBombLightIndex++;
-            }
-
+            sfxManager.audioSource.Stop();
+            sfxManager.ReceiverDown();
             receiverIsPickedUp = false;
             receiverAnimator.SetBool("OffTheHook", false);
             Array.Clear(phoneNumber, 0, phoneNumber.Length);
