@@ -14,7 +14,9 @@ public class DialogueTrigger : MonoBehaviour
     [SerializeField]DialogueManager dialogueManager;
 
     int numberToCall;
+
     float ringTime;
+
     bool isDailing = false;
     bool callInProgress = false;
     bool bombCounterTriggered = false;

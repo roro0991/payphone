@@ -16,6 +16,7 @@ public class PayPhone : MonoBehaviour
 
     int currentPhoneNumberIndex = 0;
     int triggeredBombLightIndex = 0;
+    int currentDigitIndex = 0;
     int numberAsInt;
 
     string numberToDisplay;
@@ -26,46 +27,21 @@ public class PayPhone : MonoBehaviour
     [SerializeField] SFXManager sfxManager;
     [SerializeField] DialogueTrigger dialogueTrigger;
     [SerializeField] CoinSlot coinSlot;
+    [SerializeField] SevenSegmentDisplay sevenSegmentDisplay;
 
     bool receiverIsPickedUp = false;
 
     private void Update()
     {
-        string numberAsString = String.Join(string.Empty, phoneNumber);                
-        int.TryParse(numberAsString, out numberAsInt);  
-      
-        string numberToDisplay = "";
-        foreach (char number in numberAsString.ToCharArray())
-        {
-            numberToDisplay += number;
-        }       
-        if (numberToDisplay.Length <= 3)
-        {
-            Display.text = numberToDisplay; 
-        }
-        else if (numberToDisplay.Length == 4)
-        {
-            Display.text = String.Format("{0:###-#}", int.Parse(numberToDisplay));
-        }
-        else if (numberToDisplay.Length == 5)
-        {
-            Display.text = String.Format("{0:###-##}", int.Parse(numberToDisplay));
-        }
-        else if (numberToDisplay.Length == 6)
-        {
-            Display.text = String.Format("{0:###-###}", int.Parse(numberToDisplay));
-        }
-        else if (numberToDisplay.Length == 7)
-        {
-            Display.text = String.Format("{0:###-####}", int.Parse(numberToDisplay));
-        }
+        string numberAsString = String.Join(string.Empty, phoneNumber);
+        int.TryParse(numberAsString, out numberAsInt);
     }
 
 
     public void NumberButton(int value)
     {
-        if (!receiverIsPickedUp 
-            | coinSlot.GetCoinCount() == 0 
+        if (!receiverIsPickedUp
+            | coinSlot.GetCoinCount() == 0
             || dialogueTrigger.GetIsDailingStatus() == true)
         {
             sfxManager.ButtonPress();
@@ -73,12 +49,14 @@ public class PayPhone : MonoBehaviour
         }
         else
         {
-        sfxManager.ButtonPress();
-        if (currentPhoneNumberIndex < phoneNumber.Length)
+            sfxManager.ButtonPress();
+            if (currentPhoneNumberIndex < phoneNumber.Length)
             {
                 phoneNumber[currentPhoneNumberIndex] = value;
-                currentPhoneNumberIndex++; 
-            }          
+                currentPhoneNumberIndex++;
+                sevenSegmentDisplay.digits[currentDigitIndex].GetComponent<DigitController>().DisplayDigit(value);
+                currentDigitIndex++;
+            }
         }
     }
 
@@ -86,7 +64,7 @@ public class PayPhone : MonoBehaviour
     {
         if (!receiverIsPickedUp)
         {
-            sfxManager.ReceiverUP(); 
+            sfxManager.ReceiverUP();
             receiverIsPickedUp = true;
             receiverAnimator.SetBool("OffTheHook", true);
         }
@@ -95,7 +73,7 @@ public class PayPhone : MonoBehaviour
             if (dialogueTrigger.GetBombCounterTriggerStatus() == false)
             {
                 sfxManager.audioSource.Stop();
-                sfxManager.ReceiverDown();           
+                sfxManager.ReceiverDown();
             }
             else if (dialogueTrigger.GetBombCounterTriggerStatus() == true)
             {
@@ -105,23 +83,25 @@ public class PayPhone : MonoBehaviour
                 bombLights[triggeredBombLightIndex].GetComponent<Image>().color = Color.red;
                 triggeredBombLightIndex++;
             }
-            
+
             receiverIsPickedUp = false;
             receiverAnimator.SetBool("OffTheHook", false);
             Array.Clear(phoneNumber, 0, phoneNumber.Length);
             currentPhoneNumberIndex = 0;
+            sevenSegmentDisplay.ClearAllDigits();
+            currentDigitIndex = 0;
             coinSlot.ResetCoinCount();
-        }               
+        }
     }
 
     public int GetPhoneNumber()
     {
-         return numberAsInt;         
+        return numberAsInt;
     }
 
     public bool GetReceiverStatus()
     {
         return receiverIsPickedUp;
-    }    
+    }
 
 }

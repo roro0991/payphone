@@ -13,7 +13,6 @@ public class SFXManager : MonoBehaviour
         int index = Random.Range(0, buttonPresses.Count);
         AudioClip buttonPressClip = buttonPresses[index];
         audioSource.PlayOneShot(buttonPressClip);
-
     }
 
     public void DialRing()

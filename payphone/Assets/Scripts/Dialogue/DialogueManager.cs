@@ -16,22 +16,20 @@ public class DialogueManager : MonoBehaviour
 
     [SerializeField] private TextMeshProUGUI nameText;
     [SerializeField] private TextMeshProUGUI dialogueText;
+    [SerializeField] private Button continueButton;
 
     [Header("Choices UI")]
     [SerializeField] private GameObject[] choices;
     private TextMeshProUGUI[] choicesText;
 
-    [SerializeField] private Button continueButton;
+    [SerializeField] SFXManager sfxManager;
+    [SerializeField] PayPhone payPhone;
 
     public Animator dialoguePanelAnimator; 
 
     private Story currentStory; 
 
-    [SerializeField] SFXManager sfxManager;
-    [SerializeField] PayPhone payPhone;
-
     private float textSpeed = 0.05f;
-
 
     private void Start()
     {

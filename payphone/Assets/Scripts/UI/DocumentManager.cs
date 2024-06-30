@@ -5,13 +5,10 @@ using UnityEngine.VFX;
 
 public class DocumentManager : MonoBehaviour
 {
-    SFXManager sfxManager;
+    [SerializeField] SFXManager sfxManager;
+
     public Animator documentAnimator; 
 
-    private void Start()
-    {
-        sfxManager = FindAnyObjectByType<SFXManager>();
-    }
 
 
     bool documentIsOpen = false;
