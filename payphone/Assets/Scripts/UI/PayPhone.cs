@@ -11,23 +11,24 @@ public class PayPhone : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI Display;
 
-    int?[] phoneNumber = new int?[7];
+    private int?[] phoneNumber = new int?[7];
 
-    int currentPhoneNumberIndex = 0;
-    int currentDigitIndex = 0;
-    int numberAsInt;
+    private int currentPhoneNumberIndex = 0;
+    private int currentDigitIndex = 0;
+    private int numberAsInt;
 
-    string numberToDisplay;
+    private string numberToDisplay;
 
     public Animator receiverAnimator;
     public Animator documentAnimator;
 
-    [SerializeField] SFXManager sfxManager;
-    [SerializeField] DialogueTrigger dialogueTrigger;
-    [SerializeField] CoinSlot coinSlot;
-    [SerializeField] SevenSegmentDisplay sevenSegmentDisplay;
+    [SerializeField] private SFXManager sfxManager;
+    [SerializeField] private DialogueManager dialogueManager;
+    [SerializeField] private DialogueTrigger dialogueTrigger;    
+    [SerializeField] private CoinSlot coinSlot;
+    [SerializeField] private SevenSegmentDisplay sevenSegmentDisplay;
 
-    bool receiverIsPickedUp = false;
+    private bool receiverIsPickedUp = false;
 
     private void Update()
     {
@@ -69,6 +70,7 @@ public class PayPhone : MonoBehaviour
         }
         else if (receiverIsPickedUp)
         {
+            dialogueManager.ExitDialogueMode();
             sfxManager.audioSource.Stop();
             sfxManager.ReceiverDown();
             receiverIsPickedUp = false;

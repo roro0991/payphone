@@ -13,7 +13,7 @@ public class Coin : MonoBehaviour, IDragHandler, IEndDragHandler
 
     private void Awake()
     {
-        canvas = FindObjectOfType<Canvas>();
+        canvas = GameObject.FindGameObjectWithTag("PhoneCanvas").GetComponent<Canvas>();
     }
 
     public void OnDrag(PointerEventData eventData)

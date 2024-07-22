@@ -5,14 +5,11 @@ using UnityEngine.EventSystems;
 
 public class CoinGenerator : MonoBehaviour, IBeginDragHandler, IDragHandler
 {
-    [SerializeField] GameObject coin;
-    [SerializeField] SFXManager sfxManager;
-    Canvas canvas;
+    [SerializeField] private GameObject coin;
+    [SerializeField] private SFXManager sfxManager;
+    [SerializeField] private Canvas canvas;
 
-    private void Start()
-    {
-        canvas = FindAnyObjectByType<Canvas>();
-    }
+    
 
     public void OnBeginDrag(PointerEventData eventData)
     {

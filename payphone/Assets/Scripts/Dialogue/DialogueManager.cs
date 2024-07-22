@@ -23,8 +23,8 @@ public class DialogueManager : MonoBehaviour
     [SerializeField] private GameObject[] choices;
     private TextMeshProUGUI[] choicesText;
 
-    [SerializeField] SFXManager sfxManager;
-    [SerializeField] PayPhone payPhone;
+    [SerializeField] private SFXManager sfxManager;
+    [SerializeField] private PayPhone payPhone;
 
     public Animator dialoguePanelAnimator;
 
@@ -50,13 +50,6 @@ public class DialogueManager : MonoBehaviour
         }
     }
 
-    private void Update()
-    {        
-        if (payPhone.GetReceiverStatus() == false)
-        {
-            ExitDialogueMode();
-        }       
-    }
 
     public void EnterDialogueMode(TextAsset inkJSON)
     {
@@ -86,7 +79,6 @@ public class DialogueManager : MonoBehaviour
         if (currentStory.canContinue)
         {
             string line = currentStory.Continue();
-            /*HandleTags(currentStory.currentTags);*/
             StopAllCoroutines();
             StartCoroutine(TypeLine(line));            
         }
@@ -95,28 +87,6 @@ public class DialogueManager : MonoBehaviour
             ExitDialogueMode();
         }
     }
-
-
-    /*private void HandleTags(List<string> currentTags)
-    {
-        foreach (string tag in currentTags)
-        {
-            string[] splitTag = tag.Split(':');
-            if (splitTag.Length != 2)
-            {
-                Debug.LogError("Tag could not be appropriately parsed: " + tag);
-            }
-            string tagKey = splitTag[0].Trim();
-            string tagValue = splitTag[1].Trim();
-
-            switch (tagKey)
-            {
-                default:
-                    Debug.LogWarning("Tag came in but is not currently being handled: " + tag);
-                    break;
-            }
-        }
-    }*/
 
     IEnumerator TypeLine(string line)
     {
@@ -231,5 +201,16 @@ public class DialogueManager : MonoBehaviour
         sfxManager.audioSource.Stop();
         sfxManager.audioSource.loop = false;
         EnableContinueButton();
+    }
+
+    public Ink.Runtime.Object GetVariableState(string variableName)
+    {
+        Ink.Runtime.Object variableValue = null;
+        dialogueVariables.variables.TryGetValue(variableName, out variableValue); 
+        if (variableValue == null)
+        {
+            Debug.LogWarning("Ink Variable was found to be null: " + variableName);
+        }
+        return variableValue; 
     }
 }
